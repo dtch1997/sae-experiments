@@ -3,6 +3,7 @@ from absl import app, flags
 from lxm3 import xm, xm_cluster
 from lxm3.contrib import ucl
 
+import os
 import dotenv
 from sae_experiments.sweep import get_sweep
 
@@ -23,6 +24,8 @@ _SWEEP  = flags.DEFINE_string(
 )
 _HIGH_VRAM = flags.DEFINE_boolean("high_vram", False, "If set, restrict to high VRAM instances")
 
+def get_cluster_name() -> str:
+    return os.getenv("CLUSTER")
 
 def main(_):
     # use script name as experiment title
@@ -36,17 +39,27 @@ def main(_):
         else:
             job_requirements = xm_cluster.JobRequirements(ram=ram * xm.GB)
 
+        extra_directives = []
+        if _HIGH_VRAM.value:
+            if get_cluster_name() == "cs":
+                extra_directives = ["-l gpu_type=(a100|rtx8000|a100_80|a100_dgx)"]
+            elif get_cluster_name() == "myriad":
+                extra_directives = ["-ac allow=L"]
+            else:
+                raise ValueError(f"Unknown cluster name: {get_cluster_name()}")
+
+        # Define the walltime
+        walltime = _HOURS.value * xm.Hr
+
         # Define the executor
-        hours = _HOURS.value
         if _LAUNCH_ON_CLUSTER.value:
             # This is a special case for using SGE in UCL where we use generic
             # job requirements and translate to SGE specific requirements.
             # Non-UCL users, use `xm_cluster.GridEngine directly`.
             executor = ucl.UclGridEngine(
-                job_requirements,
-                walltime=hours * xm.Hr,
-                # TODO: un-hardcode
-                extra_directives=['-l gpu_type=(a100|rtx8000|a100_80|a100_dgx)']
+                requirements = job_requirements,
+                walltime = walltime,
+                extra_directives = extra_directives
             )
         else:
             executor = xm_cluster.Local(job_requirements)
