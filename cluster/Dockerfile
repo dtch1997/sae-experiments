@@ -15,6 +15,7 @@ RUN apt-get update \
     cuda-command-line-tools-12-2 \
     cuda-nvcc-12-2 \
     sudo \
+    git \
     python3.11 \
     python3.11-venv \
     python3.11-distutils \
@@ -37,8 +38,11 @@ ENV VIRTUAL_ENV=/opt/venv
 RUN python3.11 -m venv $VIRTUAL_ENV
 ENV PATH=$VIRTUAL_ENV/bin:$PATH
 
-RUN python3 -m pip --no-cache-dir install -U pip wheel setuptools \
-    && pip install --upgrade absl-py "jax[cuda11_local]" -f https://storage.googleapis.com/jax-releases/jax_cuda_releases.html
+# Install package dependencies
+COPY pyproject.toml /workdir
+COPY README.md /workdir
+WORKDIR /workdir
+RUN python3.11 -m pip install .
 
 ENV PYTHONUNBUFFERED=1
 ENV PYTHONDONTWRITEBYTECODE=1

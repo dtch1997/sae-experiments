@@ -5,6 +5,7 @@ import simple_parsing
 import torch
 
 from sae_lens import LanguageModelSAERunnerConfig, language_model_sae_runner
+from sae_experiments.slack import send_slack_notification
 
 os.environ["TOKENIZERS_PARALLELISM"] = "false"
 os.environ["WANDB__SERVICE_WAIT"] = "300"
@@ -63,4 +64,5 @@ if __name__ == "__main__":
     cfg = args.cfg
     pprint(cfg)
     
+    # TODO: send slack notifications
     language_model_sae_runner(cfg)

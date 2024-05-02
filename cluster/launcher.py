@@ -21,6 +21,7 @@ _ENTRYPOINT = flags.DEFINE_string(
 _SWEEP  = flags.DEFINE_string(
     "sweep", "none", "Sweep name"
 )
+_HIGH_VRAM = flags.DEFINE_boolean("high_vram", False, "If set, restrict to high VRAM instances")
 
 
 def main(_):
@@ -44,6 +45,8 @@ def main(_):
             executor = ucl.UclGridEngine(
                 job_requirements,
                 walltime=hours * xm.Hr,
+                # TODO: un-hardcode
+                extra_directives=['-l gpu_type=(a100|rtx8000|a100_80|a100_dgx)']
             )
         else:
             executor = xm_cluster.Local(job_requirements)
@@ -59,6 +62,10 @@ def main(_):
             # In the implementation, this is translated to
             #   python3 -m py_package.main
             entrypoint=xm_cluster.ModuleName(entrypoint),
+            # # NOTE: by default, pip install --no-deps is used to install the package.
+            # # This means that the dependencies required by the project are not installed.
+            # # We override this default behavior by specifying the pip_args.
+            # pip_args=[]
         )
 
         # Wrap the python_package to be executing in a singularity container.
