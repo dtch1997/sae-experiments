@@ -5,7 +5,12 @@ description = "A repository for running experiments on SAEs with SAELens"
 authors = [
     {name = "Daniel CH Tan", email = "dtch1997@users.noreply.github.com"},
 ]
-dependencies = []
+dependencies = [
+    "sae-lens @ git+https://github.com/dtch1997/SAELens.git@feat-gated-sae",
+    "lxm3>=0.4.2",
+    "simple-parsing>=0.1.5",
+    "python-dotenv>=1.0.1",
+]
 requires-python = ">=3.11"
 readme = "README.md"
 license = {text = "MIT"}
