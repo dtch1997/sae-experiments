@@ -13,7 +13,7 @@ _GPU = flags.DEFINE_boolean("gpu", False, "If set, use GPU")
 _RAM = flags.DEFINE_integer("ram", 16, "RAM in GB")
 _HOURS = flags.DEFINE_integer("hours", 16, "Walltime in hours")
 _SINGULARITY_CONTAINER = flags.DEFINE_string(
-    "container", None, "Path to singularity container"
+    "container", "sae-experiments-latest.sif", "Path to singularity container"
 )
 _ENTRYPOINT = flags.DEFINE_string(
     "entrypoint", "sae_experiments.run", "Entrypoint"
@@ -54,7 +54,7 @@ def main(_):
             # NOTE: 'path' is a relative path to the launcher that contains
             # your python package (i.e. the directory that contains pyproject.toml)
             # Here, .../cluster --> .../
-            path=".",
+            path="..",
             # Entrypoint is the python module that you would like to
             # In the implementation, this is translated to
             #   python3 -m py_package.main

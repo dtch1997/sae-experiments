@@ -62,5 +62,5 @@ if __name__ == "__main__":
     args = parser.parse_args()
     cfg = args.cfg
     pprint(cfg)
-
+    
     language_model_sae_runner(cfg)
